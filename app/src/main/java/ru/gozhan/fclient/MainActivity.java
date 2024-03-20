@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
 import ru.gozhan.fclient.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -12,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     // Used to load the 'fclient' library on application startup.
     static {
         System.loadLibrary("fclient");
+        System.loadLibrary("mbedcrypto");
     }
 
     private ActivityMainBinding binding;
@@ -19,12 +22,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        int res = initRng();
+        byte[] v = randomBytes(10);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        byte[] key = new byte[16];
+        byte[] data = new byte[32];
+        byte[] encrypted = encrypt(key, data);
+        byte[] decrypted = decrypt(key, data);
+        System.out.println(Arrays.toString(encrypted));
+        System.out.println(Arrays.toString(decrypted));
+        System.out.println(res);
+        System.out.println(Arrays.toString(v));
 
-        // Example of a call to a native method
-        TextView tv = binding.sampleText;
+        TextView tv = findViewById(R.id.sample_text);
         tv.setText(stringFromJNI());
     }
 
@@ -33,4 +44,8 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+    public static native int initRng();
+    public static native byte[] randomBytes(int no);
+    public static native byte[] encrypt(byte[] key, byte[] data);
+    public static native byte[] decrypt(byte[] key, byte[] data);
 }

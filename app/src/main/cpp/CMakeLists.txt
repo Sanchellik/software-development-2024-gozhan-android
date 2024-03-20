@@ -33,5 +33,22 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 # build script, prebuilt third-party libraries, or Android system libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
+        spdlog
+        mbedcrypto
+        ${log-lib}
         android
         log)
+
+add_library(spdlog STATIC IMPORTED)
+set_target_properties(spdlog PROPERTIES IMPORTED_LOCATION
+        /Users/aigozhan/AndroidStudioProjects/software-development-2024/libs/spdlog/build/x86_64/libspdlog.a)
+target_include_directories(fclient PUBLIC
+        /Users/aigozhan/AndroidStudioProjects/software-development-2024/libs/spdlog/spdlog/include)
+
+add_library(mbedcrypto SHARED IMPORTED)
+set_target_properties(mbedcrypto PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_CURRENT_SOURCE_DIR}/../nativeLibs/${ANDROID_ABI}/libmbedcrypto.so)
+
+target_include_directories(fclient PUBLIC
+        /Users/aigozhan/AndroidStudioProjects/software-development-2024/libs/spdlog/spdlog/include,
+        /Users/aigozhan/AndroidStudioProjects/software-development-2024/libs/mbedtls/mbedtls/include)
